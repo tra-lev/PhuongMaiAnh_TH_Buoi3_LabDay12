@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pma_Lab05.Models;
 namespace Pma_Lab05
+
 {
     public class Program
     {

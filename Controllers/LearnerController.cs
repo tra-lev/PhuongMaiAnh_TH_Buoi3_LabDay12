@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Pma_Lab05.Models;
 
@@ -12,23 +13,25 @@ public class LearnerController : Controller
         _context = context;
     }
 
-    // GET: LEARNERS
+    // GET: Learners
     public async Task<IActionResult> Index()
     {
-        var schoolContext = _context.Learners.Include(l => l.Major);
-        return View(await schoolContext.ToListAsync());
+        var learners = _context.Learners.Include(l => l.Major);
+        return View(await learners.ToListAsync());
     }
 
-    // GET: LEARNERS/Details/5
-    public async Task<IActionResult> Details(int? learnerid)
+    // GET: Learners/Details/5
+    public async Task<IActionResult> Details(int? id)
     {
-        if (learnerid == null)
+        if (id == null)
         {
             return NotFound();
         }
 
         var learner = await _context.Learners
-            .FirstOrDefaultAsync(m => m.LearnerId == learnerid);
+            .Include(l => l.Major)
+            .FirstOrDefaultAsync(m => m.LearnerId == id);
+
         if (learner == null)
         {
             return NotFound();
@@ -37,18 +40,20 @@ public class LearnerController : Controller
         return View(learner);
     }
 
-    // GET: LEARNERS/Create
+    // GET: Learners/Create
     public IActionResult Create()
     {
+        ViewData["MajorId"] = new SelectList(
+            _context.Majors, "MajorId", "MajorName");
+
         return View();
     }
 
-    // POST: LEARNERS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // POST: Learners/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("LearnerId,LastName,FirstMidName,EnrollmentDate,MajorId,Enrollments,Major")] Learner learner)
+    public async Task<IActionResult> Create(
+        [Bind("LastName,FirstMidName,EnrollmentDate,MajorId")] Learner learner)
     {
         if (ModelState.IsValid)
         {
@@ -56,33 +61,42 @@ public class LearnerController : Controller
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        ViewData["MajorId"] = new SelectList(
+            _context.Majors, "MajorId", "MajorName", learner.MajorId);
+
         return View(learner);
     }
 
-    // GET: LEARNERS/Edit/5
-    public async Task<IActionResult> Edit(int? learnerid)
+    // GET: Learners/Edit/5
+    public async Task<IActionResult> Edit(int? id)
     {
-        if (learnerid == null)
+        if (id == null)
         {
             return NotFound();
         }
 
-        var learner = await _context.Learners.FindAsync(learnerid);
+        var learner = await _context.Learners.FindAsync(id);
+
         if (learner == null)
         {
             return NotFound();
         }
+
+        ViewData["MajorId"] = new SelectList(
+            _context.Majors, "MajorId", "MajorName", learner.MajorId);
+
         return View(learner);
     }
 
-    // POST: LEARNERS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // POST: Learners/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? learnerid, [Bind("LearnerId,LastName,FirstMidName,EnrollmentDate,MajorId,Enrollments,Major")] Learner learner)
+    public async Task<IActionResult> Edit(
+        int id,
+        [Bind("LearnerId,LastName,FirstMidName,EnrollmentDate,MajorId")] Learner learner)
     {
-        if (learnerid != learner.LearnerId)
+        if (id != learner.LearnerId)
         {
             return NotFound();
         }
@@ -105,21 +119,28 @@ public class LearnerController : Controller
                     throw;
                 }
             }
+
             return RedirectToAction(nameof(Index));
         }
+
+        ViewData["MajorId"] = new SelectList(
+            _context.Majors, "MajorId", "MajorName", learner.MajorId);
+
         return View(learner);
     }
 
-    // GET: LEARNERS/Delete/5
-    public async Task<IActionResult> Delete(int? learnerid)
+    // GET: Learners/Delete/5
+    public async Task<IActionResult> Delete(int? id)
     {
-        if (learnerid == null)
+        if (id == null)
         {
             return NotFound();
         }
 
         var learner = await _context.Learners
-            .FirstOrDefaultAsync(m => m.LearnerId == learnerid);
+            .Include(l => l.Major)
+            .FirstOrDefaultAsync(m => m.LearnerId == id);
+
         if (learner == null)
         {
             return NotFound();
@@ -128,23 +149,24 @@ public class LearnerController : Controller
         return View(learner);
     }
 
-    // POST: LEARNERS/Delete/5
+    // POST: Learners/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? learnerid)
+    public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var learner = await _context.Learners.FindAsync(learnerid);
+        var learner = await _context.Learners.FindAsync(id);
+
         if (learner != null)
         {
             _context.Learners.Remove(learner);
+            await _context.SaveChangesAsync();
         }
 
-        await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool LearnerExists(int? learnerid)
+    private bool LearnerExists(int id)
     {
-        return _context.Learners.Any(e => e.LearnerId == learnerid);
+        return _context.Learners.Any(e => e.LearnerId == id);
     }
 }

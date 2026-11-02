@@ -1,26 +1,33 @@
 @model IEnumerable<Pma_Lab05.Models.Learner>
 
 @{
-    ViewData["Title"] = "Learner";
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/MyLayoutHelper.cshtml";
 }
 
-<h1 class="text-center mb-4">Learner List</h1>
-
 <p>
-    <a asp-action="Create" class="btn btn-primary">
-        Create New
-    </a>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
 
-<table class="table table-striped table-bordered table-hover">
-    <thead class="table-dark">
+<table class="table table-bordered table-striped">
+    <thead>
         <tr>
-            <th>Learner ID</th>
-            <th>Last Name</th>
-            <th>First Name</th>
-            <th>Enrollment Date</th>
-            <th>Major</th>
-            <th>Action</th>
+            <th>
+                @Html.DisplayNameFor(model => model.LearnerId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstMidName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EnrollmentDate)
+            </th>
+            <th>
+                Major
+            </th>
+            <th></th>
         </tr>
     </thead>
 
@@ -28,22 +35,36 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.LearnerId</td>
-                <td>@item.LastName</td>
-                <td>@item.FirstMidName</td>
-                <td>@item.EnrollmentDate.ToShortDateString()</td>
-                <td>@item.Major?.MajorName</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.LearnerId"
-                       class="btn btn-warning btn-sm">Edit</a>
-
-                    <a asp-action="Details" asp-route-id="@item.LearnerId"
-                       class="btn btn-info btn-sm">Details</a>
-
-                    <a asp-action="Delete" asp-route-id="@item.LearnerId"
-                       class="btn btn-danger btn-sm">Delete</a>
+                    @Html.DisplayFor(model => item.LearnerId)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.FirstMidName)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.EnrollmentDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.Major.MajorName)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.LearnerId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.LearnerId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.LearnerId">Delete</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        var table = document.querySelector("table");
+        table.onclick = function onTableClick() {
+            table.style = "background-color: yellow;"
+        }
+    </script>
+}
