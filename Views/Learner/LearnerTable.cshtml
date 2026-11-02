@@ -1,0 +1,44 @@
+﻿@model IEnumerable<Pma_Lab05.Models.Learner>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Mã</th>
+            <th>Tên</th>
+            <th>Họ</th>
+            <th>Ngành</th>
+            <th>Ngày Nhập Học</th>
+            <th>Chức năng</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.LearnerId</td>
+                <td>@s.FirstMidName</td>
+                <td>@s.LastName</td>
+                <td>@s.Major.MajorName</td>
+                <td>@s.EnrollmentDate</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@s.LearnerId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@s.LearnerId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@s.LearnerId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (ViewBag.pageNum != null && ViewBag.pageNum > 1)
+{
+    <ul class="pagination">
+        @for (int i = 1; i <= ViewBag.pageNum; i++)
+        {
+            <li class="page-item @(i == ViewBag.pageIndex ? "active" : "")" page="@i"
+                mid="@ViewBag.mid" keyword="@ViewBag.keyword">
+                <a class="page-link" style="cursor:pointer">@i</a>
+            </li>
+        }
+    </ul>
+}
