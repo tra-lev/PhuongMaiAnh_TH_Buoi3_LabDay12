@@ -1,4 +1,6 @@
-namespace Pma_Lab03
+using Microsoft.EntityFrameworkCore;
+using Pma_Lab05.Models;
+namespace Pma_Lab05
 {
     public class Program
     {
@@ -8,6 +10,8 @@ namespace Pma_Lab03
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<SchoolContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SchoolContext")));
 
             var app = builder.Build();
 
